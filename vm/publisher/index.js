@@ -14,19 +14,17 @@ function getRandomIntInclusive(min, max) {
 function ConnectEvent(){
     setInterval(
         function(){
-            var onoff = ["ON","OFF"]
-            var bool = ["TRUE","FALSE"]
+            
             var jsonFile = JSON.stringify(
                 {   
-                    control: onoff[getRandomIntInclusive(0,1)] ,
-                    forward: bool[getRandomIntInclusive(0,1)],
-                    ip: add.ip()
+                    ID: "xxx" ,
+                    Owner: "Allende"
                 }
             );
             console.log(JSON.parse(jsonFile))
             client.publish(process.env.TOPIC, jsonFile)
     
-    },5000);
+    },3000);
 }
 
 

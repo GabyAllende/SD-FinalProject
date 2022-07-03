@@ -12,9 +12,11 @@ docker run -it --rm -p 1883:1883 -d --network mis-libros-net --name broker -v $P
 cd publisher/
 docker build . -t image-publisher:1.0.0
 
-declare -a names=(pub_1 pub_2 pub_3 pub_4 pub_5)
+# declare -a names=(pub_1 pub_2 pub_3 pub_4 pub_5)
 
-for (( j=0; j<5; j++ ));
-do
-  docker run -e PORT=1883 --rm -d -e TOPIC=control -e HOST=broker --network mis-libros-net --name "${names[$j]}" image-publisher:1.0.0
-done
+# for (( j=0; j<5; j++ ));
+# do
+#   docker run -e PORT=1883 --rm -d -e TOPIC=control -e HOST=broker --network mis-libros-net --name "${names[$j]}" image-publisher:1.0.0
+# done
+
+docker run -e PORT=1883 --rm -d -e TOPIC=results -e HOST=broker --network mis-libros-net --name "pruebapub" image-publisher:1.0.0

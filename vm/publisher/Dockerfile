@@ -14,6 +14,6 @@ COPY . .
 
 ENV HOST = "broker"
 ENV PORT = 1883
-ENV TOPIC = "control"
+ENV TOPIC = "results"
 ENTRYPOINT [ "node" , "index.js" ]
 
