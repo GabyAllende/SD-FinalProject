@@ -26,7 +26,7 @@ port = '21212'
 
 client_id = ubinascii.hexlify(machine.unique_id())
 
-topic_sub = b'result'
+topic_sub = b'results'
 topic_pub = b'verify'
 
 last_message = 0
