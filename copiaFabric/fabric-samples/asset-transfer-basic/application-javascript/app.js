@@ -124,7 +124,7 @@ async function main() {
 
             
             client.on('message', async function(topic, message) {
-                if (topic === "registry")
+                if (topic === "upb/blockchain/registry")
 		{
 			var recv_json = JSON.parse(message.toString());
 			var id = recv_json["ID"];
@@ -138,7 +138,7 @@ async function main() {
 				console.log("El Asset ya se encontraba registrado");
 			}
 		}
-		if (topic === "verify") 
+		if (topic === "upb/blockchain/verify") 
 		{
                     	console.log("Llego mensaje de verify");
                     	console.log("mensaje:", message.toString());
@@ -152,7 +152,7 @@ async function main() {
 			try{
 				registry = await contract.evaluateTransaction('ReadAsset', id);
                         	console.log("existe y registry es:", registry.toString());
-                        	client.publish('results', registry.toString() );
+                        	client.publish('upb/blockchain/results', registry.toString() );
                		}catch(err)
 			{
 				console.log("El asset no existe");
@@ -226,13 +226,13 @@ async function main() {
     }
 }
 client.on('connect', function() {
-    client.subscribe('verify', function(err) {
+    client.subscribe('upb/blockchain/verify', function(err) {
         if (err) {
             console.log("HUbo error:")
             console.log(err);
         }
     });
-    client.subscribe('registry', function(err){
+    client.subscribe('upb/blockchain/registry', function(err){
     	if(err){
 		console.log("ERROR!: ");
 		console.log(err);
