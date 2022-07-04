@@ -18,7 +18,6 @@ gc.collect()
 # ssid = 'COMTECO-N3791960'
 # password = 'CVGUZ50074'
 
-# Usuario 2
 ssid = 'TIGO-ALLENDE'
 password = '30051998'
 mqtt_server = 'research.upb.edu'
@@ -27,7 +26,13 @@ port = '21212'
 
 client_id = ubinascii.hexlify(machine.unique_id())
 
-topic_sub = b'forward'
+topic_sub = b'upb/blockchain/results'
+topic_pub = b'upb/blockchain/verify'
+topic_pub2 = b'upb/blockchain/registry'
+
+last_message = 0
+message_interval = 5
+counter = 0
 
 station = network.WLAN(network.STA_IF)
 
