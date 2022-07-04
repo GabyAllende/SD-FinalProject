@@ -1,3 +1,4 @@
+
 /*
  * Copyright IBM Corp. All Rights Reserved.
  *
@@ -121,35 +122,46 @@ async function main() {
             await contract.submitTransaction('InitLedger');
             console.log('*** Esperando conection');
 
-            console.log("En medio de connect y message");
+            
             client.on('message', async function(topic, message) {
-                if (topic === "verify") {
-                    console.log("Llego mensaje de verify");
-                    console.log(message);
-                    recv_json = JSON.parse(message);
-                    id = recv_json["ID"];
-                    console.log("Id:", id);
-                    exists = await contract.evaluateTransaction('AssetExists', id)
-                    if (exists) {
-                        registry = await contract.evaluateTransaction('ReadAsset', id)
-                        console.log("existe y registry es:", registry);
-                        client.publish('results', JSON.parse(registry))
-                    } else {
-                        console.log("No existe");
-                        recv_json['Owner'] = "--None--";
-                        client.publish('results', JSON.parse(recv_json));
-                    }
+                if (topic === "registry")
+		{
+			var recv_json = JSON.parse(message.toString());
+			var id = recv_json["ID"];
+			var owner = recv_json["Owner"];
+			try{
+				await contract.submitTransaction('CreateAsset', id, owner);
+				console.log("Asset Registrado correctamente!");
+			}
+			catch(err)
+			{
+				console.log("El Asset ya se encontraba registrado");
+			}
+		}
+		if (topic === "verify") 
+		{
+                    	console.log("Llego mensaje de verify");
+                    	console.log("mensaje:", message.toString());
+			var recv_json = {};
+			var id = ""
+			var registry
+			var exists
+                    	recv_json = JSON.parse(message.toString());
+                    	id = recv_json["ID"];
+                    	console.log("Id:", id);         
+			try{
+				registry = await contract.evaluateTransaction('ReadAsset', id);
+                        	console.log("existe y registry es:", registry.toString());
+                        	client.publish('results', registry.toString() );
+               		}catch(err)
+			{
+				console.log("El asset no existe");
+			}
 
                 }
 
             })
-            client.on('error', function(error) {
-                console.log("mqtt error:" + error);
-            })
-            client.on('close', function() {
-                console.log("mqtt closed");
-            })
-            console.log("No logro conectar")
+        
                 // Let's try a query type operation (function).
                 // This will be sent to just one peer and the results will be shown.
 
@@ -207,7 +219,7 @@ async function main() {
             console.log("application closing");
             // Disconnect from the gateway when the application is closing
             // This will close all connections to the network
-            gateway.disconnect();
+           // gateway.disconnect();
         }
     } catch (error) {
         console.error(`******** FAILED to run the application: ${error}`);
@@ -219,6 +231,12 @@ client.on('connect', function() {
             console.log("HUbo error:")
             console.log(err);
         }
+    });
+    client.subscribe('registry', function(err){
+    	if(err){
+		console.log("ERROR!: ");
+		console.log(err);
+	}
     });
     console.log("In connect");
 })
