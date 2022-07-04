@@ -28,6 +28,7 @@ client_id = ubinascii.hexlify(machine.unique_id())
 
 topic_sub = b'results'
 topic_pub = b'verify'
+topic_pub2 = b'registry'
 
 last_message = 0
 message_interval = 5

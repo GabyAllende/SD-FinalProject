@@ -29,12 +29,17 @@ def sub_cb(topic, msg):
 
 
 def connect_and_subscribe():
-  global client_id, mqtt_server, topic_sub , port
+  global client_id, mqtt_server, topic_sub , port, topic_pub2
   client = MQTTClient(client_id, mqtt_server ,port=port,keepalive=60)
   client.set_callback(sub_cb)
   client.connect()
   client.subscribe(topic_sub)
   print('Connected to %s MQTT broker, subscribed to %s topic' % (mqtt_server, topic_sub))
+  msg = {"ID": client_id, "Owner": "Gabriela Allende"}
+  msg_json = json.dumps(msg)
+  # print("msg: "+msg)
+  print("Registry Pub: "+msg_json)
+  client.publish(topic_pub2, msg_json)
   return client
 
 def restart_and_reconnect():
@@ -54,6 +59,7 @@ while True:
     if (time.time() - last_message) > message_interval:
       msg = {"ID": client_id}
       msg_json = json.dumps(msg)
+      print("msg_json: "+msg_json)
       client.publish(topic_pub, msg_json)
       last_message = time.time()
       counter += 1
