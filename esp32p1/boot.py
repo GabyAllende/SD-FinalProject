@@ -26,8 +26,9 @@ port = '21212'
 
 client_id = ubinascii.hexlify(machine.unique_id())
 
-topic_sub = b'results'
-topic_pub = b'verify'
+topic_sub = b'upb/blockchain/results'
+topic_pub = b'upb/blockchain/verify'
+topic_pub2 = b'upb/blockchain/registry'
 
 last_message = 0
 message_interval = 5

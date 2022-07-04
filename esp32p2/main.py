@@ -1,12 +1,4 @@
 
-def turnOnLed(turnLed):
-
-  led = machine.Pin(25, machine.Pin.OUT)
-  led.value(0)
-  if turnLed == 'ON':
-    led.value(1)
-
-
 def sub_cb(topic, msg):
   global client_id
   print("Topico , mensaje")
@@ -28,25 +20,26 @@ def sub_cb(topic, msg):
   # Create the display object
   oled = ssd1306.SSD1306_I2C(oled_width, oled_height, i2c)
   
-  oled.text('control: ' ,0,0)
-  oled.text(mensaje_rcv['control'], 70, 0)
-  oled.text('forward: ' ,0,10)
-  oled.text(mensaje_rcv['forward'], 0, 20)
-  oled.text('ip: ' ,0,30)
-  oled.text(mensaje_rcv['ip'], 0, 40)
+  oled.text('ID: ' ,0,0)
+  oled.text(mensaje_rcv['ID'], 70, 0)
+  oled.text('Owner: ' ,0,10)
+  oled.text(mensaje_rcv['Owner'], 0, 20)
   
   oled.show()
-  turnOnLed(mensaje_rcv['control']) 
-
 
 
 def connect_and_subscribe():
-  global client_id, mqtt_server, topic_sub , port
+  global client_id, mqtt_server, topic_sub , port, topic_pub2
   client = MQTTClient(client_id, mqtt_server ,port=port,keepalive=60)
   client.set_callback(sub_cb)
   client.connect()
   client.subscribe(topic_sub)
   print('Connected to %s MQTT broker, subscribed to %s topic' % (mqtt_server, topic_sub))
+  msg = {"ID": client_id, "Owner": "Gabriela Allende"}
+  msg_json = json.dumps(msg)
+  # print("msg: "+msg)
+  print("Registry Pub: "+msg_json)
+  client.publish(topic_pub2, msg_json)
   return client
 
 def restart_and_reconnect():
@@ -59,8 +52,17 @@ try:
 except OSError as e:
   restart_and_reconnect()
 
+global client_id, topic_sub
 while True:
   try:
-    mensaje = client.check_msg()
+    client.check_msg()
+    if (time.time() - last_message) > message_interval:
+      msg = {"ID": client_id}
+      msg_json = json.dumps(msg)
+      print("msg_json: "+msg_json)
+      client.publish(topic_pub, msg_json)
+      last_message = time.time()
+      counter += 1
+
   except OSError as e:
     restart_and_reconnect()
